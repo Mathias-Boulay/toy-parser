@@ -1,4 +1,4 @@
-package fr.spse
+package fr.spse.parsing
 
 // FIXME some toString() representations aren't accurate anymore
 abstract class Node(val children: List<Node>) {

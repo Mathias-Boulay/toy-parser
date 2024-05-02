@@ -1,10 +1,9 @@
-import fr.spse.Parser
-import fr.spse.exceptions.ConsumeParserError
-import fr.spse.exceptions.DigitParserError
-import fr.spse.exceptions.ParserError
+import fr.spse.parsing.Parser
+import fr.spse.exceptions.ConsumeParserException
+import fr.spse.exceptions.DigitParserException
+import fr.spse.exceptions.ParserException
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import kotlin.jvm.Throws
 
 class ParserTest {
     /** Basic parsing tests, they shouldn't throw any exception */
@@ -48,49 +47,49 @@ class ParserTest {
 
     @Test
     fun parseInvalidDigit() {
-        assertThrows(DigitParserError::class.java) {
+        assertThrows(DigitParserException::class.java) {
             Parser("a").parse()
         }
     }
 
     @Test
     fun parseInvalidNegativeNumber() {
-        assertThrows(DigitParserError::class.java) {
+        assertThrows(DigitParserException::class.java) {
             Parser("-a").parse()
         }
     }
 
     @Test
     fun parseInvalidNumber() {
-        assertThrows(ConsumeParserError::class.java) {
+        assertThrows(ConsumeParserException::class.java) {
             Parser("5a").parse()
         }
     }
 
     @Test
     fun parseInvalidElement() {
-        assertThrows(ConsumeParserError::class.java) {
+        assertThrows(ConsumeParserException::class.java) {
             Parser("element+5").parse()
         }
     }
 
     @Test
     fun parseInvalidBinaryExpression() {
-        assertThrows(ConsumeParserError::class.java) {
+        assertThrows(ConsumeParserException::class.java) {
             Parser("(5+3").parse()
         }
     }
 
     @Test
     fun parseInvalidComplexExpression() {
-        assertThrows(ConsumeParserError::class.java) {
+        assertThrows(ConsumeParserException::class.java) {
             Parser("((5+3)*-2").parse()
         }
     }
 
     @Test
     fun parseSpace() {
-        assertThrows(ParserError::class.java) {
+        assertThrows(ParserException::class.java) {
             Parser("(3+ 5)").parse()
         }
     }

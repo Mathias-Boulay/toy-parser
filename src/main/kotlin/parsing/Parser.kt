@@ -1,9 +1,8 @@
-package fr.spse
+package fr.spse.parsing
 
-import fr.spse.exceptions.ConsumeParserError
-import fr.spse.exceptions.DigitParserError
-import fr.spse.exceptions.OperationParserError
-import fr.spse.exceptions.ParserError
+import fr.spse.exceptions.ConsumeParserException
+import fr.spse.exceptions.DigitParserException
+import fr.spse.exceptions.OperationParserException
 
 
 /**
@@ -25,10 +24,10 @@ class Parser(private var input: String) {
      * @return The consumed char
      */
     private fun consume(expected: Char? = null): Char {
-        if(input.isEmpty()) throw ConsumeParserError("No more characters to consume.")
+        if(input.isEmpty()) throw ConsumeParserException("No more characters to consume.")
 
         if(expected != null && input[0] != expected)
-            throw ConsumeParserError("Failed to consume $input, expected $expected, got ${input[0]}.")
+            throw ConsumeParserException("Failed to consume $input, expected $expected, got ${input[0]}.")
 
         val consumedChar = input[0]
         input = input.substring(1, input.length)
@@ -36,7 +35,7 @@ class Parser(private var input: String) {
     }
 
     private fun expectConsumedInput() {
-        if (input.isNotEmpty()) throw ConsumeParserError("More characters than expected: $input")
+        if (input.isNotEmpty()) throw ConsumeParserException("More characters than expected: $input")
     }
 
     /**
@@ -46,7 +45,7 @@ class Parser(private var input: String) {
         if(input[0].isDigit()) {
             return DigitNode(consume().toString())
         }
-        throw DigitParserError("Not a digit: ${input[0]}")
+        throw DigitParserException("Not a digit: ${input[0]}")
     }
 
     /**
@@ -68,7 +67,7 @@ class Parser(private var input: String) {
         if (charArrayOf('+', '-', '*').find { it == input[0] } != null) {
             return OperationNode(consume().toString())
         }
-        throw OperationParserError("Not an operation: ${input[0]}")
+        throw OperationParserException("Not an operation: ${input[0]}")
     }
 
     private fun parseConstantExpression(): ConstantExpressionNode {
