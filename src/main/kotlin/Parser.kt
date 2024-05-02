@@ -1,38 +1,56 @@
 package fr.spse
 
+import fr.spse.exceptions.ConsumeParserError
+import fr.spse.exceptions.DigitParserError
+import fr.spse.exceptions.OperationParserError
 import fr.spse.exceptions.ParserError
 
 
+/**
+ * Parser who parses once, and only once.
+ */
 class Parser(private var input: String) {
+
+    /**
+     * @return The parsed input as an intermediate representation
+     */
+    fun parse(): ExpressionNode {
+        val expression = parseExpression()
+        expectConsumedInput()
+        return expression
+    }
 
     /**
      * Consume the char from the input stream
      * @return The consumed char
      */
     private fun consume(expected: Char? = null): Char {
-        val test = (25+1)
         if(expected != null && input[0] != expected)
-            throw ParserError("Failed to consume, expected $expected, got $input")
+            throw ConsumeParserError("Failed to consume $input, expected $expected, got ${input[0]}.")
 
         val consumedChar = input[0]
         input = input.substring(1, input.length)
         return consumedChar
     }
 
+    private fun expectConsumedInput() {
+        if (input.isNotEmpty()) throw ConsumeParserError("More characters than expected: $input")
+    }
+
     /**
      * Parse and return a single digit
      */
-    fun parseDigit(): DigitNode {
+    private fun parseDigit(): DigitNode {
         if(input[0].isDigit()) {
             return DigitNode(consume().toString())
         }
-        throw ParserError("Not a digit: $input")
+        throw DigitParserError("Not a digit: ${input[0]}")
     }
 
     /**
      * Parse and return a number
      */
-    fun parseNumber(): NumberNode {
+    private fun parseNumber(): NumberNode {
         val children = mutableListOf<Node>()
         // At least one digit has to be there
         children.add(parseDigit())
@@ -44,26 +62,26 @@ class Parser(private var input: String) {
         return NumberNode(children)
     }
 
-    fun parseOperation(): OperationNode {
+    private fun parseOperation(): OperationNode {
         if (charArrayOf('+', '-', '*').find { it == input[0] } != null) {
             return OperationNode(consume().toString())
         }
-        throw ParserError("Not an operation: $input")
+        throw OperationParserError("Not an operation: ${input[0]}")
     }
 
-    fun parseConstantExpression(): ConstantExpressionNode {
+    private fun parseConstantExpression(): ConstantExpressionNode {
 
         // Optional negative number
         var negativeSign = false
         if (input[0] == '-') {
-            consume()
+            consume('-')
             negativeSign = true
         }
 
         return ConstantExpressionNode(negativeSign, listOf(parseNumber()))
     }
 
-    fun parseBinaryExpression(): BinaryExpressionNode {
+    private fun parseBinaryExpression(): BinaryExpressionNode {
         val children = mutableListOf<Node>()
 
         consume('(')
@@ -75,7 +93,7 @@ class Parser(private var input: String) {
         return BinaryExpressionNode(children)
     }
 
-    fun parseExpression(): ExpressionNode {
+    private fun parseExpression(): ExpressionNode {
         // The grammar specifies "element" as one of the possibilities
         // I have a feeling it should have been <number> instead.
         // You get what you describe though
@@ -89,7 +107,6 @@ class Parser(private var input: String) {
         } else {
             return ExpressionNode(listOf(parseConstantExpression()))
         }
-        //throw ParserError("Failed to parse expression: $input")
     }
 
 }

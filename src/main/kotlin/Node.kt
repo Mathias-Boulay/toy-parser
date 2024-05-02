@@ -1,8 +1,6 @@
 package fr.spse
 
-import java.util.*
-
-// TODO create specialised node types
+// FIXME some toString() representations aren't accurate anymore
 abstract class Node(val children: List<Node>) {
 
     override fun toString(): String {
@@ -28,7 +26,6 @@ class ConstantExpressionNode(val negativeValue: Boolean, children: List<Node>): 
         return "${if (negativeValue) "-" else ""}${super.print()}"
     }
 }
-
 
 class ExpressionNode(children: List<Node>): Node(children) {
     var value: String = ""
