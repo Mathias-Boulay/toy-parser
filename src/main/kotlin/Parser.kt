@@ -52,24 +52,25 @@ class Parser(private var input: String) {
     }
 
     fun parseConstantExpression(): ConstantExpressionNode {
-        val children = mutableListOf<Node>()
+
         // Optional negative number
+        var negativeSign = false
         if (input[0] == '-') {
-            children.add(TerminalNode(consume().toString()))
+            consume()
+            negativeSign = true
         }
 
-        children.add(parseNumber())
-        return ConstantExpressionNode(children)
+        return ConstantExpressionNode(negativeSign, listOf(parseNumber()))
     }
 
     fun parseBinaryExpression(): BinaryExpressionNode {
         val children = mutableListOf<Node>()
 
-        children.add(TerminalNode(consume('(').toString()))
+        consume('(')
         children.add(parseExpression())
         children.add(parseOperation())
         children.add(parseExpression())
-        children.add(TerminalNode(consume(')').toString()))
+        consume(')')
 
         return BinaryExpressionNode(children)
     }
@@ -79,13 +80,16 @@ class Parser(private var input: String) {
         // I have a feeling it should have been <number> instead.
         // You get what you describe though
         if (input[0] == 'e') {
-           // TODO consume all chars
+           for (char in "element"){
+               consume(char)
+           }
+            return ExpressionNode("element")
         } else if (input[0] == '(') {
             return ExpressionNode(listOf(parseBinaryExpression()))
         } else {
             return ExpressionNode(listOf(parseConstantExpression()))
         }
-        throw ParserError("Failed to parse expression: $input")
+        //throw ParserError("Failed to parse expression: $input")
     }
 
 }
