@@ -2,7 +2,8 @@ package fr.spse
 
 fun main() {
     println("Hello World!")
-    val parser = Parser("(53+15)")
-    val node = parser.parseExpression()
+    val parser = Parser("((element+15)*5)")
+    val node = parser.parse()
     println(node)
+    println(node.print())
 }

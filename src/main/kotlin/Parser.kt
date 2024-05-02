@@ -25,6 +25,8 @@ class Parser(private var input: String) {
      * @return The consumed char
      */
     private fun consume(expected: Char? = null): Char {
+        if(input.isEmpty()) throw ConsumeParserError("No more characters to consume.")
+
         if(expected != null && input[0] != expected)
             throw ConsumeParserError("Failed to consume $input, expected $expected, got ${input[0]}.")
 
@@ -56,7 +58,7 @@ class Parser(private var input: String) {
         children.add(parseDigit())
 
         // Check if there is a number ahead
-        if (input[0].isDigit()) {
+        if (input.isNotEmpty() && input[0].isDigit()) {
             children.add(parseNumber())
         }
         return NumberNode(children)
